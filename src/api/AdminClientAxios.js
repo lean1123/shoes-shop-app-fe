@@ -1,21 +1,25 @@
 import axios from "axios";
+import AuthAPI from "./AuthAPI";
 
 const AdminAxiosClient = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
 const getToken = () => {
-  const token = localStorage.getItem("jwt");
-
+  const token = localStorage.getItem("accessToken");
   return token ? token : "";
 };
 
 AdminAxiosClient.interceptors.request.use(
   async (config) => {
-    const publicEndpoints = [/auth\/login/, /auth\/signup/, /auth\/refresh/];
+    const publicEndpoints = [
+      /auth\/login/,
+      /auth\/signUp/,
+      /auth\/refreshToken/,
+    ];
 
     const isPublicEndpoint = publicEndpoints.some((pattern) =>
       pattern.test(config.url)
@@ -44,41 +48,43 @@ AdminAxiosClient.interceptors.response.use(
     return response;
   },
   async (error) => {
-    // const originalRequest = error.config;
+    const originalRequest = error.config;
 
-    // if (error.response.status === 401 && !originalRequest._retry) {
-    //   originalRequest._retry = true;
-    //   let token = getToken();
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
 
-    //   if (token) {
-    //     try {
-    //       const refreshedToken = await UserService.refreshToken(token);
-    //       console.log("refreshedToken in admin axios: ", refreshedToken);
-    //       if (refreshedToken.length === 0) {
-    //         // throw new Error("No token returned");
-    //         return Promise.reject(error);
-    //       }
-    //       token = refreshedToken;
-    //       localStorage.setItem("jwt", token);
-    //       originalRequest.headers.Authorization = `Bearer ${token}`;
+      let token = getToken();
 
-    //       return AdminAxiosClient(originalRequest);
-    //     } catch (error) {
-    //       console.error("Error during token refresh request", error);
+      if (token) {
+        try {
+          const refreshedToken = await AuthAPI.refreshToken();
 
-    //       return Promise.reject(error);
-    //     }
-    //   }
-    //   return Promise.reject(error);
-    // }
+          console.log("refreshedToken in admin axios: ", refreshedToken);
+          if (refreshedToken.status !== 200) {
+            // throw new Error("No token returned");
+            return Promise.reject(error);
+          }
+          token = await refreshedToken.data.token;
+          localStorage.setItem("accessToken", token);
+          originalRequest.headers.Authorization = `Bearer ${token}`;
 
-    // if (error.response) {
-    //   console.error("Response error", error.response);
-    // } else if (error.request) {
-    //   console.error("No response received", error.request);
-    // } else {
-    //   console.error("Request setup error", error.message);
-    // }
+          return AdminAxiosClient(originalRequest);
+        } catch (error) {
+          console.error("Error during token refresh request", error);
+
+          return Promise.reject(error);
+        }
+      }
+      return Promise.reject(error);
+    }
+
+    if (error.response) {
+      console.error("Response error", error.response);
+    } else if (error.request) {
+      console.error("No response received", error.request);
+    } else {
+      console.error("Request setup error", error.message);
+    }
 
     return Promise.reject(error);
   }

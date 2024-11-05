@@ -1,12 +1,21 @@
 "use client";
+import { useAppDispatch } from "@/lib/hooks";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import React from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import AuthAPI from "../../../api/AuthAPI";
+import { login } from "../AuthSlice";
+import { useRouter } from "next/navigation";
+
+type FormValues = {
+  email: string;
+  password: string;
+};
 
 const Page = () => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
   const schema = yup.object().shape({
     email: yup.string().email().required(),
     password: yup.string().required(),
@@ -21,12 +30,22 @@ const Page = () => {
   });
 
   // chua dua vao redux
-  const handleSubmit = async (data) => {
-    try {
-      const response = await AuthAPI.login(data.email, data.password);
-      console.log("response: ", response);
+  const handleSubmit = async (data: FormValues) => {
+    // try {
+    //   const response = await AuthAPI.login(data.email, data.password);
+    //   console.log("response: ", response);
+    //   console.log("response: ", response);
+    // } catch (error) {
+    //   console.error("Error during login request: ", error);
+    // }
 
-      console.log("response: ", response);
+    try {
+      const action = login(data);
+      const resultAction = await dispatch(action);
+      console.log("resultAction: ", resultAction);
+      if (resultAction.payload) {
+        router.push("/home");
+      }
     } catch (error) {
       console.error("Error during login request: ", error);
     }
