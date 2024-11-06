@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { logout } from "../auth/AuthSlice";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -49,6 +50,7 @@ const HomePage = () => {
     <Box>
       <Typography>Home HomePage</Typography>
       <Button onClick={handleLogout}>Logout</Button>
+      <Link href={"/auth/signup"}>Redirect to SignUpPage</Link>
     </Box>
   );
 };
