@@ -1,5 +1,5 @@
+import AuthAPI from "@/api/AuthAPI";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import AuthAPI from "../../api/AuthAPI";
 
 interface ILoginResponse {
   accessToken: string | undefined;
@@ -87,13 +87,7 @@ export const logout = createAsyncThunk(
 const AuthSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {
-    // logout: (state) => {
-    //   localStorage.removeItem("user");
-    //   localStorage.removeItem("jwt");
-    //   state.current = {};
-    // },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(register.fulfilled, (state, action) => {
@@ -112,11 +106,9 @@ const AuthSlice = createSlice({
         state.accessToken = undefined;
       })
       .addCase(logout.rejected, (state, action) => {
+        state.accessToken = undefined;
         console.error("Error in logout", action.payload);
       });
   },
 });
-
-// export const { logout } = AuthSlice.actions;
-
-export const authreducer = AuthSlice.reducer;
+export default AuthSlice.reducer;
