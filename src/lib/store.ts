@@ -1,12 +1,11 @@
-"use client";
-import userReducer from "@/app/(auth)/AuthSlice";
+import userReducer from "@/reducers/AuthSlice";
+import { createPersistStorage } from "@/utils/storage";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
-import storage from "redux-persist/lib/storage/session";
 
 const persistConfig = {
   key: "root",
-  storage,
+  storage: createPersistStorage(),
 };
 
 const rootReducer = combineReducers({
@@ -21,11 +20,21 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false,
+      serializableCheck: {
+        ignoredActions: [
+          "persist/PERSIST",
+          "persist/REHYDRATE",
+          "persist/FLUSH",
+          "persist/PAUSE",
+          "persist/REGISTER",
+        ],
+        ignoredPaths: ["persist"],
+      },
     }),
 });
 
 export const persistor = persistStore(store);
+
 // Infer the type of makeStore
 export type AppStore = typeof store;
 // Infer the `RootState` and `AppDispatch` types from the store itself

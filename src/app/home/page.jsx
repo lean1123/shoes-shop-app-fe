@@ -3,7 +3,7 @@ import AuthAPI from "@/api/AuthAPI";
 import { Box, Button, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { logout } from "../(auth)/AuthSlice";
+import { logout } from "../../reducers/AuthSlice";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 

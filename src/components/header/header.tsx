@@ -13,8 +13,6 @@ function Header() {
   );
 
   useEffect(() => {
-    console.log("access token in header", token);
-
     if (token) {
       setIsOpen(false);
     }

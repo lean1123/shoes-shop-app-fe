@@ -5,7 +5,7 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useRouter } from "next/navigation";
-import { login } from "../../AuthSlice";
+import { login } from "../../../../reducers/AuthSlice";
 
 type FormValues = {
   email: string;

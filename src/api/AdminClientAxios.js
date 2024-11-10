@@ -1,7 +1,7 @@
 import axios from "axios";
 import AuthAPI from "./AuthAPI";
-import { logout } from "@/app/(auth)/AuthSlice";
-import store from "@/store/Store";
+import { logout } from "@/reducers/AuthSlice";
+import { store } from "@/lib/store";
 
 const AdminAxiosClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
