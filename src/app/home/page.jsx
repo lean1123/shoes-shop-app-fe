@@ -3,7 +3,7 @@ import AuthAPI from "@/api/AuthAPI";
 import { Box, Button, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { logout } from "../auth/AuthSlice";
+import { logout } from "../(auth)/AuthSlice";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -50,7 +50,7 @@ const HomePage = () => {
     <Box>
       <Typography>Home HomePage</Typography>
       <Button onClick={handleLogout}>Logout</Button>
-      <Link href={"/auth/signup"}>Redirect to SignUpPage</Link>
+      <Link href={"/signup"}>Redirect to SignUpPage</Link>
     </Box>
   );
 };

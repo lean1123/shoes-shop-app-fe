@@ -1,5 +1,7 @@
 import axios from "axios";
 import AuthAPI from "./AuthAPI";
+import { logout } from "@/app/(auth)/AuthSlice";
+import store from "@/store/Store";
 
 const AdminAxiosClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -7,6 +9,12 @@ const AdminAxiosClient = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+const logOutCurrentUser = async () => {
+  const action = logout();
+  await store.dispatch(action);
+  window.location.href = "/login";
+};
 
 const getToken = () => {
   const token = localStorage.getItem("accessToken");
@@ -62,6 +70,7 @@ AdminAxiosClient.interceptors.response.use(
           console.log("refreshedToken in admin axios: ", refreshedToken);
           if (refreshedToken.status !== 200) {
             // throw new Error("No token returned");
+            logOutCurrentUser();
             return Promise.reject(error);
           }
           token = await refreshedToken.data.token;
@@ -71,10 +80,12 @@ AdminAxiosClient.interceptors.response.use(
           return AdminAxiosClient(originalRequest);
         } catch (error) {
           console.error("Error during token refresh request", error);
-
+          logOutCurrentUser();
           return Promise.reject(error);
         }
       }
+      logOutCurrentUser();
+
       return Promise.reject(error);
     }
 

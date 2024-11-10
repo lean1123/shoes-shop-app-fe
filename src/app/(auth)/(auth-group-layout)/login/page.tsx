@@ -4,8 +4,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import { login } from "../AuthSlice";
 import { useRouter } from "next/navigation";
+import { login } from "../../AuthSlice";
 
 type FormValues = {
   email: string;
@@ -29,21 +29,11 @@ const Page = () => {
     resolver: yupResolver(schema),
   });
 
-  // chua dua vao redux
   const handleSubmit = async (data: FormValues) => {
-    // try {
-    //   const response = await AuthAPI.login(data.email, data.password);
-    //   console.log("response: ", response);
-    //   console.log("response: ", response);
-    // } catch (error) {
-    //   console.error("Error during login request: ", error);
-    // }
-
     try {
       const action = login(data);
       const resultAction = await dispatch(action);
-      console.log("resultAction: ", resultAction);
-      if (resultAction.payload) {
+      if (resultAction.payload !== null) {
         router.push("/home");
       }
     } catch (error) {
